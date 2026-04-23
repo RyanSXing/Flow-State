@@ -12,18 +12,30 @@ window.overlayAPI.onCharacterSet((data) => {
 // Bounce animation on reaction
 window.overlayAPI.onReaction(() => {
   el.classList.remove('bouncing')
-  void el.offsetWidth // force reflow to restart animation
+  void el.offsetWidth
   el.classList.add('bouncing')
   el.addEventListener('animationend', () => el.classList.remove('bouncing'), { once: true })
 })
 
-// Drag: hold Option (Alt) key to enter drag mode
-document.addEventListener('mousedown', (e) => {
-  if (!e.altKey) return
+// Hover over character → disable click-through so mouse events are captured
+el.addEventListener('mouseenter', () => {
+  window.overlayAPI.setClickThrough(false)
+  el.style.cursor = 'grab'
+})
+
+el.addEventListener('mouseleave', () => {
+  if (!isDragging) {
+    window.overlayAPI.setClickThrough(true)
+    el.style.cursor = 'default'
+  }
+})
+
+el.addEventListener('mousedown', (e) => {
   isDragging = true
   lastX = e.screenX
   lastY = e.screenY
-  document.body.style.cursor = 'grabbing'
+  el.style.cursor = 'grabbing'
+  e.preventDefault()
 })
 
 document.addEventListener('mousemove', (e) => {
@@ -32,14 +44,14 @@ document.addEventListener('mousemove', (e) => {
   const dy = e.screenY - lastY
   lastX = e.screenX
   lastY = e.screenY
-  if (dx !== 0 || dy !== 0) {
-    window.overlayAPI.reportMove(dx, dy)
-  }
+  if (dx !== 0 || dy !== 0) window.overlayAPI.reportMove(dx, dy)
 })
 
 document.addEventListener('mouseup', () => {
-  if (isDragging) {
-    isDragging = false
-    document.body.style.cursor = 'default'
-  }
+  if (!isDragging) return
+  isDragging = false
+  el.style.cursor = 'grab'
+  // Re-enable click-through if mouse is no longer over character
+  const rect = el.getBoundingClientRect()
+  // mouseleave will fire naturally and handle this
 })

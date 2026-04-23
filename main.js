@@ -180,6 +180,11 @@ function registerIPC() {
     overlayWin.setPosition(nx, ny)
     store.setOverlayPosition(nx, ny)
   })
+
+  ipcMain.on('overlay:click-through', (_, enabled) => {
+    if (!overlayWin) return
+    overlayWin.setIgnoreMouseEvents(enabled, { forward: true })
+  })
 }
 
 // ── Loop Setup ───────────────────────────────────────────────────────────────
