@@ -8,7 +8,7 @@ On task: ${verdict.onTask}
 Session history (most recent last):
 ${memoryLog || '(no history yet)'}
 
-Write 1-3 sentences of spoken dialogue reacting to what they're doing. Reference the history if there's a clear pattern. Stay in character. Be specific about what you saw. No stage directions.`
+Write exactly 1 short sentence of spoken dialogue reacting to what they're doing. Reference the history if there's a clear pattern. Stay in character. Be specific about what you saw. No stage directions.`
 }
 
 async function generateDialogue(verdict, memoryLog, characterConfig, taskDescription, apiKey) {
@@ -21,7 +21,7 @@ async function generateDialogue(verdict, memoryLog, characterConfig, taskDescrip
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 256,
+      max_tokens: 80,
       messages: [{
         role: 'user',
         content: buildPrompt(verdict, memoryLog, characterConfig, taskDescription)
