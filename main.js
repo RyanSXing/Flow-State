@@ -83,10 +83,7 @@ function createSettingsWindow() {
 // ── Tray ─────────────────────────────────────────────────────────────────────
 
 function createTray() {
-  // 16x16 white circle template image
-  const icon = nativeImage.createFromDataURL(
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAA+SURBVDiNY/z//z8DJYCJgUIw+A2gygAWBgYGBlIMABswasCoAaMGjBowasCoAaMGjBowasCoAQMGAABq0QjwmSUqfQAAAABJRU5ErkJggg=='
-  )
+  const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'trayTemplate.png'))
   tray = new Tray(icon)
   updateTrayMenu()
 }
