@@ -1,0 +1,7 @@
+const { contextBridge, ipcRenderer } = require('electron')
+
+contextBridge.exposeInMainWorld('overlayAPI', {
+  onCharacterSet: (cb) => ipcRenderer.on('character:set', (_, data) => cb(data)),
+  onReaction: (cb) => ipcRenderer.on('reaction:fire', (_, data) => cb(data)),
+  reportMove: (dx, dy) => ipcRenderer.send('overlay:moved', { dx, dy })
+})
