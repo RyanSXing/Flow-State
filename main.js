@@ -14,21 +14,10 @@ let loop = null
 
 function checkScreenPermission() {
   const status = systemPreferences.getMediaAccessStatus('screen')
-  if (status === 'granted') return true
-
-  dialog.showMessageBox({
-    type: 'warning',
-    title: 'Screen Recording Required',
-    message: 'Flow State needs Screen Recording permission to watch your screen.',
-    detail: 'Go to System Preferences → Privacy & Security → Screen Recording, enable Flow State, then relaunch the app.',
-    buttons: ['Open System Preferences', 'Quit']
-  }).then(({ response }) => {
-    if (response === 0) {
-      shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture')
-    }
-    app.quit()
-  })
-  return false
+  if (status !== 'granted') {
+    console.warn('[permissions] Screen Recording not granted yet — screenshots will fail until permission is given in System Preferences → Privacy & Security → Screen Recording')
+  }
+  return true
 }
 
 // ── Overlay Window ───────────────────────────────────────────────────────────
