@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Flow State</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #fff; }
+    h2 {
+      font-size: 11px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+      margin-top: 20px;
+    }
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      background: #2d2d2d;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 13px;
+      outline: none;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: #555;
+    }
+    input[type="range"] { width: 100%; accent-color: #4a9eff; }
+    .interval-label { font-size: 12px; color: #666; margin-top: 5px; }
+    .field-gap { margin-bottom: 8px; }
+    button {
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #btn-start { background: #2ea44f; color: white; }
+    #btn-start:hover { background: #3bb55f; }
+    #btn-pause { background: #e3a117; color: white; display: none; }
+    #btn-pause:hover { background: #f0b030; }
+    #btn-resume { background: #2ea44f; color: white; display: none; }
+    #btn-resume:hover { background: #3bb55f; }
+    .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+    #session-log {
+      height: 130px;
+      overflow-y: auto;
+      background: #111;
+      border: 1px solid #2d2d2d;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 11px;
+      font-family: 'SF Mono', monospace;
+      color: #888;
+    }
+    .log-entry { margin-bottom: 3px; line-height: 1.4; }
+    .log-on { color: #2ea44f; }
+    .log-off { color: #e85353; }
+    .log-time { color: #444; }
+    #status { font-size: 12px; color: #666; margin-top: 6px; min-height: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Flow State</h1>
+
+  <h2>Current Task</h2>
+  <input type="text" id="task" placeholder="What are you working on?" />
+  <div class="btn-row">
+    <button id="btn-start">Start Session</button>
+    <button id="btn-pause">Pause</button>
+    <button id="btn-resume">Resume</button>
+  </div>
+  <div id="status"></div>
+
+  <h2>Character</h2>
+  <select id="character"></select>
+
+  <h2>Check Interval</h2>
+  <input type="range" id="interval" min="10" max="60" step="5" value="20" />
+  <div class="interval-label" id="interval-label">Check every 20 seconds</div>
+
+  <h2>API Keys</h2>
+  <div class="field-gap">
+    <input type="password" id="anthropic-key" placeholder="Anthropic API Key" />
+  </div>
+  <input type="password" id="elevenlabs-key" placeholder="ElevenLabs API Key" />
+
+  <h2>Session Log</h2>
+  <div id="session-log"><div style="color:#333">No events yet.</div></div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
