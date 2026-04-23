@@ -12,10 +12,13 @@ function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdle
   let idleInterval = null
   let lastIdleReactionAt = 0
   let wasIdle = false
+  let ticking = false
 
   async function tick() {
+    if (ticking) return
     const settings = getSettings()
     if (settings.paused || !settings.taskDescription) return
+    ticking = true
 
     const { anthropic, elevenlabs } = getApiKeys()
     const character = getCharacter(settings.character)
@@ -31,6 +34,8 @@ function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdle
       onReaction({ verdict, dialogue, character })
     } catch (err) {
       console.error('[loop] tick error:', err.message)
+    } finally {
+      ticking = false
     }
   }
 

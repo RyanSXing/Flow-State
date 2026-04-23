@@ -25,6 +25,7 @@ async function init() {
 
 function showActive() {
   document.getElementById('btn-start').style.display = 'none'
+  document.getElementById('btn-update').style.display = 'inline-block'
   document.getElementById('btn-pause').style.display = 'inline-block'
   document.getElementById('btn-resume').style.display = 'none'
   document.getElementById('status').textContent = 'Session active'
@@ -32,6 +33,7 @@ function showActive() {
 
 function showPaused() {
   document.getElementById('btn-start').style.display = 'none'
+  document.getElementById('btn-update').style.display = 'inline-block'
   document.getElementById('btn-pause').style.display = 'none'
   document.getElementById('btn-resume').style.display = 'inline-block'
   document.getElementById('status').textContent = 'Session paused'
@@ -39,6 +41,7 @@ function showPaused() {
 
 function showIdle() {
   document.getElementById('btn-start').style.display = 'inline-block'
+  document.getElementById('btn-update').style.display = 'none'
   document.getElementById('btn-pause').style.display = 'none'
   document.getElementById('btn-resume').style.display = 'none'
   document.getElementById('status').textContent = ''
@@ -66,6 +69,15 @@ document.getElementById('btn-start').addEventListener('click', async () => {
   await saveCurrentSettings()
   await window.settingsAPI.startSession(task)
   showActive()
+})
+
+document.getElementById('btn-update').addEventListener('click', async () => {
+  const task = document.getElementById('task').value.trim()
+  if (!task) { document.getElementById('status').textContent = 'Enter a task first.'; return }
+  await saveCurrentSettings()
+  await window.settingsAPI.startSession(task)
+  document.getElementById('status').textContent = 'Task updated'
+  setTimeout(() => { document.getElementById('status').textContent = 'Session active' }, 2000)
 })
 
 document.getElementById('btn-pause').addEventListener('click', async () => {
