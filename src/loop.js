@@ -18,6 +18,7 @@ function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdle
     if (ticking) return
     const settings = getSettings()
     if (settings.paused || !settings.taskDescription) return
+    if (getIdleTime() >= IDLE_THRESHOLD_SECONDS) return
     ticking = true
 
     const { anthropic, elevenlabs } = getApiKeys()
