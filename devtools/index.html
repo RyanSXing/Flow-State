@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Flow State — Dev Terminal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'SF Mono', 'Menlo', monospace;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #toolbar {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    #toolbar span { color: #8b949e; font-size: 11px; flex: 1; }
+    #btn-clear {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: inherit;
+    }
+    #btn-clear:hover { background: #30363d; }
+    #log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+    .entry { line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+    .time { color: #30363d; }
+    .type-LOOP     { color: #4ec9b0; }
+    .type-IDLE     { color: #dcdcaa; }
+    .type-VISION   { color: #569cd6; }
+    .type-DIALOGUE { color: #c586c0; }
+    .type-TTS      { color: #ce9178; }
+    .type-SESSION  { color: #4fc1ff; }
+    .type-SYSTEM   { color: #808080; }
+    .type-ERROR    { color: #f44747; }
+    #autoscroll { accent-color: #4a9eff; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <span>Flow State Dev Terminal</span>
+    <label style="color:#8b949e;font-size:11px;display:flex;align-items:center;gap:4px;">
+      <input type="checkbox" id="autoscroll" checked> Auto-scroll
+    </label>
+    <button id="btn-clear">Clear</button>
+  </div>
+  <div id="log"></div>
+  <script src="devtools.js"></script>
+</body>
+</html>

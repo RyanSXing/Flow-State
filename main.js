@@ -1,12 +1,14 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain, screen, shell, dialog, systemPreferences, nativeImage } = require('electron')
 const path = require('path')
 const { createLoop } = require('./src/loop')
+const { log, emitter: logEmitter } = require('./src/logger')
 const { getCharacter, getAllCharacters } = require('./src/characters')
 const store = require('./src/store')
 const memory = require('./src/memory')
 
 let overlayWin = null
 let settingsWin = null
+let devtoolsWin = null
 let tray = null
 let loop = null
 
@@ -80,6 +82,22 @@ function createSettingsWindow() {
   settingsWin.on('closed', () => { settingsWin = null })
 }
 
+function createDevtoolsWindow() {
+  if (devtoolsWin) { devtoolsWin.focus(); return }
+  devtoolsWin = new BrowserWindow({
+    width: 700,
+    height: 500,
+    title: 'Flow State — Dev Terminal',
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload', 'devtools-preload.js')
+    }
+  })
+  devtoolsWin.loadFile(path.join(__dirname, 'devtools', 'index.html'))
+  devtoolsWin.on('closed', () => { devtoolsWin = null })
+}
+
 // ── Tray ─────────────────────────────────────────────────────────────────────
 
 function createTray() {
@@ -93,6 +111,8 @@ function updateTrayMenu() {
   const sessionActive = !!settings.taskDescription
   const menu = Menu.buildFromTemplate([
     { label: 'Open Settings', click: createSettingsWindow },
+    { type: 'separator' },
+    { label: 'Dev Terminal', click: createDevtoolsWindow },
     { type: 'separator' },
     {
       label: settings.paused ? 'Resume Session' : 'Pause Session',
@@ -153,6 +173,7 @@ function registerIPC() {
     store.setSetting('taskDescription', taskDescription)
     store.setSetting('paused', false)
     memory.clear()
+    log('SESSION', `Session started — task: "${taskDescription}"`)
     loop.start(store.getSettings().interval)
     updateTrayMenu()
     pushLogUpdate()
@@ -160,12 +181,14 @@ function registerIPC() {
 
   ipcMain.handle('session:pause', () => {
     store.setSetting('paused', true)
+    log('SESSION', 'Session paused')
     loop.stop()
     updateTrayMenu()
   })
 
   ipcMain.handle('session:resume', () => {
     store.setSetting('paused', false)
+    log('SESSION', 'Session resumed')
     loop.start(store.getSettings().interval)
     updateTrayMenu()
   })
@@ -185,6 +208,8 @@ function registerIPC() {
     if (!overlayWin) return
     overlayWin.setIgnoreMouseEvents(enabled, { forward: true })
   })
+
+  ipcMain.on('devtools:clear', () => {})
 }
 
 // ── Loop Setup ───────────────────────────────────────────────────────────────
@@ -204,6 +229,9 @@ function setupLoop() {
   })
 
   const settings = store.getSettings()
+  logEmitter.on('log', (entry) => {
+    if (devtoolsWin) devtoolsWin.webContents.send('devtools:log', entry)
+  })
   if (settings.taskDescription && !settings.paused) {
     loop.start(settings.interval)
   }
@@ -217,6 +245,7 @@ app.whenReady().then(() => {
   if (!checkScreenPermission()) return
 
   createOverlayWindow()
+  log('SYSTEM', 'Flow State started')
   createTray()
   registerIPC()
   setupLoop()
