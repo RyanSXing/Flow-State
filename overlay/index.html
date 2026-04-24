@@ -10,17 +10,11 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: white;
-      background-color: #8B0000;
+      object-fit: cover;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       -webkit-app-region: no-drag;
-      letter-spacing: 0.5px;
+      display: block;
+      cursor: default;
     }
 
     #character.bouncing {
@@ -36,8 +30,5 @@
     }
   </style>
 </head>
-<body>
-  <div id="character">DS</div>
-  <script src="overlay.js"></script>
-</body>
+<body><img id="character" src="../assets/character.png" width="80" height="80" draggable="false" /><script src="overlay.js"></script></body>
 </html>

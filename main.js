@@ -55,6 +55,7 @@ function createOverlayWindow() {
     const settings = store.getSettings()
     const character = getCharacter(settings.character)
     overlayWin.webContents.send('character:set', {
+      avatarImage: character.avatarImage,
       avatarColor: character.avatarColor,
       avatarInitial: character.avatarInitial
     })
@@ -158,6 +159,7 @@ function registerIPC() {
     if (overlayWin) {
       const char = getCharacter(character)
       overlayWin.webContents.send('character:set', {
+        avatarImage: char.avatarImage,
         avatarColor: char.avatarColor,
         avatarInitial: char.avatarInitial
       })

@@ -5,8 +5,7 @@ let lastY = 0
 
 // Update character appearance
 window.overlayAPI.onCharacterSet((data) => {
-  el.style.backgroundColor = data.avatarColor
-  el.textContent = data.avatarInitial
+  if (data.avatarImage) el.src = "../" + data.avatarImage
 })
 
 // Bounce animation on reaction
