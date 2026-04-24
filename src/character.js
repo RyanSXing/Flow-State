@@ -8,7 +8,7 @@ On task: ${verdict.onTask}
 Session history (most recent last):
 ${memoryLog || '(no history yet)'}
 
-Write exactly 1 short sentence of spoken dialogue reacting to what they're doing. Reference the history if there's a clear pattern. Stay in character. Be specific about what you saw. No stage directions.`
+Write exactly 1 sentence of dialogue, 100 characters max. Stay in character. No stage directions.`
 }
 
 async function generateDialogue(verdict, memoryLog, characterConfig, taskDescription, apiKey) {
@@ -21,7 +21,7 @@ async function generateDialogue(verdict, memoryLog, characterConfig, taskDescrip
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 80,
+      max_tokens: 60,
       messages: [{
         role: 'user',
         content: buildPrompt(verdict, memoryLog, characterConfig, taskDescription)
@@ -32,7 +32,7 @@ async function generateDialogue(verdict, memoryLog, characterConfig, taskDescrip
   if (!response.ok) throw new Error(`Claude API error: ${response.status}`)
 
   const data = await response.json()
-  return data.content[0].text.trim()
+  return data.content[0].text.trim().slice(0, 100)
 }
 
 module.exports = { generateDialogue }
