@@ -123,7 +123,7 @@ function updateTrayMenu() {
         if (newPaused) {
           loop.stop()
         } else {
-          loop.start(store.getSettings().interval)
+          loop.start()
         }
         updateTrayMenu()
       }
@@ -165,7 +165,7 @@ function registerIPC() {
 
     const currentSettings = store.getSettings()
     if (!currentSettings.paused && currentSettings.taskDescription) {
-      loop.start(interval)
+      loop.start()
     }
   })
 
@@ -174,7 +174,7 @@ function registerIPC() {
     store.setSetting('paused', false)
     memory.clear()
     log('SESSION', `Session started — task: "${taskDescription}"`)
-    loop.start(store.getSettings().interval)
+    loop.start()
     updateTrayMenu()
     pushLogUpdate()
   })
@@ -189,7 +189,7 @@ function registerIPC() {
   ipcMain.handle('session:resume', () => {
     store.setSetting('paused', false)
     log('SESSION', 'Session resumed')
-    loop.start(store.getSettings().interval)
+    loop.start()
     updateTrayMenu()
   })
 
@@ -233,7 +233,7 @@ function setupLoop() {
     if (devtoolsWin) devtoolsWin.webContents.send('devtools:log', entry)
   })
   if (settings.taskDescription && !settings.paused) {
-    loop.start(settings.interval)
+    loop.start()
   }
 }
 

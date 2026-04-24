@@ -1,9 +1,11 @@
-const VISION_PROMPT = (taskDescription) => `The user is trying to: ${taskDescription}
+const VISION_PROMPT = (taskDescription) => `The user's goal is: "${taskDescription}"
 
-Look at this screenshot and return ONLY valid JSON with no markdown:
-{ "onTask": boolean, "activity": "one sentence describing what's on screen", "confidence": 0.0-1.0 }
+Look at this screenshot and determine if what's on screen is directly helping the user accomplish their goal.
 
-Be strict. YouTube videos, games, social media, and chat apps are distractions unless the task explicitly involves them.`
+Return ONLY valid JSON with no markdown:
+{ "onTask": boolean, "activity": "brief description of what's on screen", "confidence": 0.0-1.0 }
+
+Judge based ONLY on the user's stated goal — not general productivity assumptions. If there's a reasonable connection between the screen content and the goal, mark onTask true. Only mark onTask false if the content is clearly unrelated to their goal. YouTube, games, and social media may be on-task if the goal involves them.`
 
 async function analyzeScreen(base64Image, taskDescription, apiKey) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
