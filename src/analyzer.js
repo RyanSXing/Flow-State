@@ -27,7 +27,10 @@ async function analyzeScreen(base64Image, taskDescription, apiKey) {
     })
   })
 
-  if (!response.ok) throw new Error(`Claude API error: ${response.status}`)
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(`Claude API error: ${response.status} — ${body}`)
+  }
 
   const data = await response.json()
   const text = data.content[0].text.replace(/```json\n?|\n?```/g, '').trim()
