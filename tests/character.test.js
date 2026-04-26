@@ -63,3 +63,50 @@ describe('generateDialogue', () => {
     await expect(generateDialogue({}, '', characterConfig, 'task', 'key')).rejects.toThrow('Claude API error: 429')
   })
 })
+
+const { generateTransitionDialogue } = require('../src/character')
+
+describe('generateTransitionDialogue', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  test('calls Claude API with phase transition info', async () => {
+    mockFetchSuccess('Take a breather, you earned it!')
+    await generateTransitionDialogue(
+      'work', 'short-break', 1,
+      characterConfig,
+      'build the app',
+      'ant-key'
+    )
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body)
+    expect(body.messages[0].content).toContain('Drill Sergeant')
+    expect(body.messages[0].content).toContain('work session')
+    expect(body.messages[0].content).toContain('short break')
+    expect(body.messages[0].content).toContain('build the app')
+  })
+
+  test('includes pomodoro count for work to break transitions', async () => {
+    mockFetchSuccess('One down, three to go!')
+    await generateTransitionDialogue(
+      'work', 'short-break', 1,
+      characterConfig, 'study', 'ant-key'
+    )
+    const body = JSON.parse(global.fetch.mock.calls[0][1].body)
+    expect(body.messages[0].content).toContain('1 of 4')
+  })
+
+  test('returns trimmed dialogue string', async () => {
+    mockFetchSuccess('  Break time!  ')
+    const result = await generateTransitionDialogue(
+      'work', 'short-break', 1,
+      characterConfig, 'study', 'ant-key'
+    )
+    expect(result).toBe('Break time!')
+  })
+
+  test('throws on API error', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: false, status: 500, json: async () => ({}) })
+    await expect(
+      generateTransitionDialogue('work', 'short-break', 1, characterConfig, 'task', 'key')
+    ).rejects.toThrow('Claude API error: 500')
+  })
+})
