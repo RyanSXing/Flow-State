@@ -5,6 +5,8 @@ const { log, emitter: logEmitter } = require('./src/logger')
 const { getCharacter, getAllCharacters } = require('./src/characters')
 const store = require('./src/store')
 const memory = require('./src/memory')
+const { generateTransitionDialogue } = require('./src/character')
+const { speak } = require('./src/tts')
 
 let overlayWin = null
 let settingsWin = null
@@ -26,15 +28,16 @@ function checkScreenPermission() {
 
 function createOverlayWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
-  const size = 100
+  const OVERLAY_W = 180
+  const OVERLAY_H = 160
   const savedPos = store.getOverlayPosition()
-  const x = savedPos.x !== null ? savedPos.x : width - size - 20
-  const y = savedPos.y !== null ? savedPos.y : height - size - 20
+  const x = savedPos.x !== null ? savedPos.x : width - OVERLAY_W - 20
+  const y = savedPos.y !== null ? savedPos.y : height - OVERLAY_H - 20
 
   overlayWin = new BrowserWindow({
     x, y,
-    width: size,
-    height: size,
+    width: OVERLAY_W,
+    height: OVERLAY_H,
     transparent: true,
     frame: false,
     alwaysOnTop: true,
@@ -209,6 +212,35 @@ function registerIPC() {
   ipcMain.on('overlay:click-through', (_, enabled) => {
     if (!overlayWin) return
     overlayWin.setIgnoreMouseEvents(enabled, { forward: true })
+  })
+
+  ipcMain.handle('pomodoro:transition', async (_, { from, to, pomodoroCount }) => {
+    const settings = store.getSettings()
+    const { anthropic, elevenlabs } = store.getApiKeys()
+    const character = getCharacter(settings.character)
+    try {
+      const dialogue = await generateTransitionDialogue(from, to, pomodoroCount, character, settings.taskDescription, anthropic)
+      await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+      if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
+    } catch (err) {
+      log('ERROR', 'Pomodoro transition error: ' + err.message)
+      if (overlayWin) overlayWin.webContents.send('reaction:fire', {})
+    }
+  })
+
+  ipcMain.handle('pomodoro:pause', async (_, { paused }) => {
+    const settings = store.getSettings()
+    const { anthropic, elevenlabs } = store.getApiKeys()
+    const character = getCharacter(settings.character)
+    try {
+      const from = paused ? 'running' : 'paused'
+      const to = paused ? 'paused' : 'running'
+      const dialogue = await generateTransitionDialogue(from, to, 0, character, settings.taskDescription, anthropic)
+      await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+      if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
+    } catch (err) {
+      log('ERROR', 'Pomodoro pause error: ' + err.message)
+    }
   })
 
   ipcMain.on('devtools:clear', () => {})

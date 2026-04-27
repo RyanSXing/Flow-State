@@ -46,7 +46,7 @@ describe('analyzeScreen', () => {
   })
 
   test('throws on API error', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: false, status: 401, json: async () => ({}) })
-    await expect(analyzeScreen('base64', 'task', 'bad-key')).rejects.toThrow('Claude API error: 401')
+    global.fetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => 'invalid api key' })
+    await expect(analyzeScreen('base64', 'task', 'bad-key')).rejects.toThrow('Claude API error: 401 — invalid api key')
   })
 })
