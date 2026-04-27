@@ -187,15 +187,19 @@ function registerIPC() {
 
   ipcMain.handle('session:pause', () => {
     store.setSetting('paused', true)
+    pomodoroActive = false
     log('SESSION', 'Session paused')
     loop.stop()
+    if (overlayWin) overlayWin.webContents.send('pomodoro:set-running', { running: false })
     updateTrayMenu()
   })
 
   ipcMain.handle('session:resume', () => {
     store.setSetting('paused', false)
+    pomodoroActive = true
     log('SESSION', 'Session resumed')
     loop.start()
+    if (overlayWin) overlayWin.webContents.send('pomodoro:set-running', { running: true })
     updateTrayMenu()
   })
 

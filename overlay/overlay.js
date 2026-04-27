@@ -151,3 +151,11 @@ timerSettings.addEventListener('click', function(e) {
   e.stopPropagation()
   window.overlayAPI.openSettings()
 })
+
+// Sync timer state from main process (tray session pause/resume)
+window.overlayAPI.onSetRunning(function(data) {
+  if (pRunning === data.running) return
+  pRunning = data.running
+  renderTimer()
+  window.overlayAPI.setPomodoroRunning(pRunning && pPhase === 'work')
+})
