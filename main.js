@@ -246,10 +246,29 @@ function registerIPC() {
 
   ipcMain.on('pomodoro:running', (_, { active }) => {
     pomodoroActive = active
+    if (active) {
+      store.setSetting('paused', false)
+      const s = store.getSettings()
+      if (s.taskDescription) loop.start()
+      log('SESSION', 'Session resumed via pomodoro timer')
+    } else {
+      store.setSetting('paused', true)
+      log('SESSION', 'Session paused via pomodoro timer')
+    }
+    updateTrayMenu()
   })
 
   ipcMain.on('settings:open', () => {
-    if (settingsWin) { settingsWin.show(); settingsWin.focus() }
+    if (settingsWin) {
+      if (settingsWin.isVisible()) {
+        settingsWin.close()
+      } else {
+        settingsWin.show()
+        settingsWin.focus()
+      }
+    } else {
+      createSettingsWindow()
+    }
   })
 
   ipcMain.on('devtools:clear', () => {})

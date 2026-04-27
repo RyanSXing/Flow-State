@@ -8,18 +8,12 @@ const { log } = require('./logger')
 const INTERVAL_MS = 30000
 const IDLE_THRESHOLD_S = 20
 
-function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdleTime, getPomodoroActive }) {
+function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdleTime, getPomodoroActive: _getPomodoroActive }) {
   let timer = null
 
   async function tick() {
     const settings = getSettings()
     if (settings.paused || !settings.taskDescription) {
-      scheduleNext()
-      return
-    }
-
-    if (getPomodoroActive && !getPomodoroActive()) {
-      log('LOOP', 'Pomodoro not active — skipping analysis')
       scheduleNext()
       return
     }
