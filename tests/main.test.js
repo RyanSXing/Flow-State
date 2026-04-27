@@ -11,7 +11,7 @@ describe('main.js pomodoro IPC wiring', () => {
 
   test('uses expanded overlay dimensions for window size and placement', () => {
     expect(mainSource).toContain('const OVERLAY_W = 180')
-    expect(mainSource).toContain('const OVERLAY_H = 160')
+    expect(mainSource).toContain('const OVERLAY_H = 190')
     expect(mainSource).toContain('width: OVERLAY_W')
     expect(mainSource).toContain('height: OVERLAY_H')
     expect(mainSource).toContain('width - OVERLAY_W - 20')

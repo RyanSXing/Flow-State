@@ -50,9 +50,6 @@ document.addEventListener('mouseup', () => {
   if (!isDragging) return
   isDragging = false
   el.style.cursor = 'grab'
-  // Re-enable click-through if mouse is no longer over character
-  const rect = el.getBoundingClientRect()
-  // mouseleave will fire naturally and handle this
 })
 
 // ── Pomodoro timer ──────────────────────────────────────────────────────────
@@ -65,13 +62,25 @@ const PHASES = {
 let pPhase = 'work'
 let pSecondsLeft = PHASES.work.duration
 let pDone = 0
-let pRunning = true
+let pRunning = false  // starts paused — user must press play
 
-const timerBar   = document.getElementById('timer-bar')
-const timerLabel = document.getElementById('timer-label')
-const timerFill  = document.getElementById('timer-fill')
-const timerDots  = document.querySelectorAll('.timer-dot')
-const timerPause = document.getElementById('timer-pause')
+const timerBar      = document.getElementById('timer-bar')
+const timerLabel    = document.getElementById('timer-label')
+const timerFill     = document.getElementById('timer-fill')
+const timerDots     = document.querySelectorAll('.timer-dot')
+const timerPlay     = document.getElementById('timer-play')
+const timerSettings = document.getElementById('timer-settings')
+
+// Disable click-through when hovering controls area
+const timerControls = document.getElementById('timer-controls')
+timerControls.addEventListener('mouseenter', () => window.overlayAPI.setClickThrough(false))
+timerControls.addEventListener('mouseleave', () => {
+  if (!isDragging) window.overlayAPI.setClickThrough(true)
+})
+timerBar.addEventListener('mouseenter', () => window.overlayAPI.setClickThrough(false))
+timerBar.addEventListener('mouseleave', () => {
+  if (!isDragging) window.overlayAPI.setClickThrough(true)
+})
 
 function formatTime(s) {
   return Math.floor(s / 60).toString().padStart(2, '0') + ':' + (s % 60).toString().padStart(2, '0')
@@ -80,7 +89,7 @@ function formatTime(s) {
 function renderTimer() {
   const phase = PHASES[pPhase]
   const pct = ((phase.duration - pSecondsLeft) / phase.duration) * 100
-  timerLabel.textContent = phase.label + ' · ' + formatTime(pSecondsLeft)
+  timerLabel.textContent = phase.label + ' \u00b7 ' + formatTime(pSecondsLeft)
   timerLabel.style.color = phase.color
   timerFill.style.width = pct + '%'
   timerFill.style.background = phase.fill
@@ -92,6 +101,7 @@ function renderTimer() {
     dot.style.boxShadow = filled ? '0 0 5px ' + phase.color : 'none'
   })
   timerBar.classList.toggle('paused', !pRunning)
+  timerPlay.textContent = pRunning ? '\u23F8' : '\u25B6'
 }
 
 function advancePhase() {
@@ -110,6 +120,8 @@ function advancePhase() {
   pSecondsLeft = PHASES[to].duration
   renderTimer()
   window.overlayAPI.sendTransition({ from: from, to: to, pomodoroCount: pDone })
+  // Notify main: only keep loop active during work phases
+  window.overlayAPI.setPomodoroRunning(pRunning && to === 'work')
 }
 
 function tick() {
@@ -125,22 +137,17 @@ function tick() {
 setInterval(tick, 1000)
 renderTimer()
 
-timerBar.addEventListener('mouseenter', function() {
-  window.overlayAPI.setClickThrough(false)
-  timerPause.style.opacity = '1'
-})
-
-timerBar.addEventListener('mouseleave', function() {
-  if (!isDragging) {
-    window.overlayAPI.setClickThrough(true)
-    timerPause.style.opacity = '0'
-  }
-})
-
-timerPause.addEventListener('click', function(e) {
+// Play/pause button
+timerPlay.addEventListener('click', function(e) {
   e.stopPropagation()
   pRunning = !pRunning
-  timerBar.classList.toggle('paused', !pRunning)
-  timerPause.textContent = pRunning ? '\u23F8' : '\u25B6'
+  renderTimer()
   window.overlayAPI.sendPause({ paused: !pRunning })
+  window.overlayAPI.setPomodoroRunning(pRunning && pPhase === 'work')
+})
+
+// Settings button
+timerSettings.addEventListener('click', function(e) {
+  e.stopPropagation()
+  window.overlayAPI.openSettings()
 })

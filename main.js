@@ -13,6 +13,7 @@ let settingsWin = null
 let devtoolsWin = null
 let tray = null
 let loop = null
+let pomodoroActive = false
 
 // ── Screen Recording Permission ──────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ function checkScreenPermission() {
 function createOverlayWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const OVERLAY_W = 180
-  const OVERLAY_H = 160
+  const OVERLAY_H = 190
   const savedPos = store.getOverlayPosition()
   const x = savedPos.x !== null ? savedPos.x : width - OVERLAY_W - 20
   const y = savedPos.y !== null ? savedPos.y : height - OVERLAY_H - 20
@@ -243,6 +244,14 @@ function registerIPC() {
     }
   })
 
+  ipcMain.on('pomodoro:running', (_, { active }) => {
+    pomodoroActive = active
+  })
+
+  ipcMain.on('settings:open', () => {
+    if (settingsWin) { settingsWin.show(); settingsWin.focus() }
+  })
+
   ipcMain.on('devtools:clear', () => {})
 }
 
@@ -256,6 +265,7 @@ function setupLoop() {
     getSettings: () => store.getSettings(),
     getCharacter: (id) => getCharacter(id),
     getIdleTime: () => powerMonitor.getSystemIdleTime(),
+    getPomodoroActive: () => pomodoroActive,
     onReaction: ({ dialogue }) => {
       if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
       pushLogUpdate()
