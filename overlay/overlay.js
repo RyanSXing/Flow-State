@@ -54,9 +54,9 @@ document.addEventListener('mouseup', () => {
 
 // ── Pomodoro timer ──────────────────────────────────────────────────────────
 const PHASES = {
-  work:          { duration: 25 * 60, label: 'WORK',       color: '#ff7a5c', fill: 'linear-gradient(90deg,#ff6b6b,#ff8e53)', glow: '0 0 10px #ff6b6b88' },
-  'short-break': { duration:  5 * 60, label: 'BREAK',      color: '#43e0c0', fill: 'linear-gradient(90deg,#43b89c,#4facfe)', glow: '0 0 10px #43b89c88' },
-  'long-break':  { duration: 15 * 60, label: 'LONG BREAK', color: '#43e0c0', fill: 'linear-gradient(90deg,#43b89c,#4facfe)', glow: '0 0 10px #43b89c88' }
+  work:          { duration:  10, label: 'WORK',       color: '#ff7a5c', fill: 'linear-gradient(90deg,#ff6b6b,#ff8e53)', glow: '0 0 10px #ff6b6b88' },
+  'short-break': { duration:  5, label: 'BREAK',      color: '#43e0c0', fill: 'linear-gradient(90deg,#43b89c,#4facfe)', glow: '0 0 10px #43b89c88' },
+  'long-break':  { duration: 15, label: 'LONG BREAK', color: '#43e0c0', fill: 'linear-gradient(90deg,#43b89c,#4facfe)', glow: '0 0 10px #43b89c88' }
 }
 
 let pPhase = 'work'

@@ -1,0 +1,72 @@
+<h2>Pomodoro Timer Bar — Which style fits Flow-State?</h2>
+<p class="subtitle">All three sit centered under the character avatar. Click to select your preference.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d0d0d;padding:24px 20px;border-radius:8px;">
+      <div style="text-align:center;margin-bottom:8px;font-size:11px;letter-spacing:2px;color:#ff6b6b;font-family:monospace;text-transform:uppercase;">WORK · 24:13</div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:8px;overflow:hidden;width:180px;margin:0 auto;">
+        <div style="width:65%;height:100%;background:linear-gradient(90deg,#ff6b6b,#ff8e53);border-radius:99px;box-shadow:0 0 10px #ff6b6b88;"></div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;">
+        <div style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;opacity:1;box-shadow:0 0 6px #ff6b6b;"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;opacity:0.3;"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;opacity:0.3;"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:#ff6b6b;opacity:0.3;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Glowing Pill</h3>
+      <p>Warm gradient bar with glow, dot indicators for pomodoro count, monospace countdown. Feels alive and urgent.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d0d0d;padding:24px 20px;border-radius:8px;">
+      <div style="text-align:center;margin-bottom:8px;font-size:11px;letter-spacing:2px;color:#a8edea;font-family:monospace;text-transform:uppercase;">WORK · 24:13</div>
+      <div style="display:flex;gap:3px;justify-content:center;width:180px;margin:0 auto;">
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;box-shadow:0 0 6px #a8edea66;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;box-shadow:0 0 6px #a8edea66;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;box-shadow:0 0 6px #a8edea66;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;opacity:0.15;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;opacity:0.15;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;opacity:0.15;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;opacity:0.15;"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:#a8edea;opacity:0.15;"></div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:5px;margin-top:10px;">
+        <div style="padding:2px 8px;border:1px solid rgba(168,237,234,0.5);border-radius:4px;font-size:9px;color:#a8edea;font-family:monospace;">1/4</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Segmented Blocks</h3>
+      <p>Discrete segments track time, cool teal palette. Minimalist, clean. Shows progress as discrete chunks.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d0d0d;padding:24px 20px;border-radius:8px;">
+      <div style="display:flex;justify-content:center;margin-bottom:6px;">
+        <svg width="80" height="44" viewBox="0 0 80 44">
+          <path d="M 5 44 A 35 35 0 0 1 75 44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 5 44 A 35 35 0 0 1 75 44" fill="none" stroke="url(#arc-grad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="110" stroke-dashoffset="38"/>
+          <defs>
+            <linearGradient id="arc-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:#c471ed"/>
+              <stop offset="100%" style="stop-color:#f64f59"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div style="text-align:center;font-size:11px;letter-spacing:2px;color:#c471ed;font-family:monospace;text-transform:uppercase;">24:13</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Semicircle Arc</h3>
+      <p>Half-ring arc hugs below the character avatar. Purple-to-red gradient. Wraps the character visually.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Let me know your pick in the terminal, or click above. Can mix ideas too.</p>

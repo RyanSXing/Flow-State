@@ -1,0 +1,95 @@
+<h2>Overlay Layout Mockup</h2>
+<p class="subtitle">Left: work phase. Right: break phase. Hover the timer area to see the pause button.</p>
+
+<div class="split" style="gap:40px;justify-content:center;margin-top:16px;">
+
+  <!-- WORK STATE -->
+  <div class="mockup" style="width:200px;">
+    <div class="mockup-header">Work Phase</div>
+    <div class="mockup-body" style="background:#111;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;border-radius:8px;">
+      <!-- Character -->
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 4px 15px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+
+      <!-- Timer container (hover reveals pause) -->
+      <div class="timer-wrap" style="display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;cursor:pointer;" onmouseenter="this.querySelector('.pause-btn').style.opacity='1'" onmouseleave="this.querySelector('.pause-btn').style.opacity='0'">
+
+        <!-- Label + countdown -->
+        <div style="font-size:10px;letter-spacing:2px;color:#ff7a5c;font-family:monospace;font-weight:700;">WORK · 24:13</div>
+
+        <!-- Pill bar -->
+        <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:8px;width:160px;overflow:hidden;">
+          <div style="width:65%;height:100%;background:linear-gradient(90deg,#ff6b6b,#ff8e53);border-radius:99px;box-shadow:0 0 10px #ff6b6b88;transition:width 1s linear;"></div>
+        </div>
+
+        <!-- Dot indicators -->
+        <div style="display:flex;gap:5px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#ff6b6b;box-shadow:0 0 5px #ff6b6b;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#ff6b6b;opacity:0.2;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#ff6b6b;opacity:0.2;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#ff6b6b;opacity:0.2;"></div>
+        </div>
+
+        <!-- Pause button (hover only) -->
+        <div class="pause-btn" style="opacity:0;transition:opacity 0.2s;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);font-size:11px;">⏸</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BREAK STATE -->
+  <div class="mockup" style="width:200px;">
+    <div class="mockup-header">Break Phase</div>
+    <div class="mockup-body" style="background:#111;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;border-radius:8px;">
+      <!-- Character -->
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 4px 15px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+
+      <!-- Timer container -->
+      <div class="timer-wrap" style="display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;cursor:pointer;" onmouseenter="this.querySelector('.pause-btn').style.opacity='1'" onmouseleave="this.querySelector('.pause-btn').style.opacity='0'">
+
+        <!-- Label + countdown -->
+        <div style="font-size:10px;letter-spacing:2px;color:#43e0c0;font-family:monospace;font-weight:700;">BREAK · 04:58</div>
+
+        <!-- Pill bar -->
+        <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:8px;width:160px;overflow:hidden;">
+          <div style="width:30%;height:100%;background:linear-gradient(90deg,#43b89c,#4facfe);border-radius:99px;box-shadow:0 0 10px #43b89c88;transition:width 1s linear;"></div>
+        </div>
+
+        <!-- Dot indicators — 1 completed -->
+        <div style="display:flex;gap:5px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#43e0c0;box-shadow:0 0 5px #43e0c0;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#43e0c0;opacity:0.2;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#43e0c0;opacity:0.2;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#43e0c0;opacity:0.2;"></div>
+        </div>
+
+        <!-- Pause button -->
+        <div class="pause-btn" style="opacity:0;transition:opacity 0.2s;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);font-size:11px;">⏸</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IDLE STATE -->
+  <div class="mockup" style="width:200px;">
+    <div class="mockup-header">Idle (no session)</div>
+    <div class="mockup-body" style="background:#111;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;border-radius:8px;">
+      <!-- Character -->
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 4px 15px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+
+      <!-- Timer container — idle -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.3;">
+        <div style="font-size:10px;letter-spacing:2px;color:#888;font-family:monospace;font-weight:700;">-- · --:--</div>
+        <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:8px;width:160px;overflow:hidden;">
+          <div style="width:0%;height:100%;background:rgba(255,255,255,0.2);border-radius:99px;"></div>
+        </div>
+        <div style="display:flex;gap:5px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#888;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#888;opacity:0.4;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#888;opacity:0.4;"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#888;opacity:0.4;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Hover the timer areas to see the pause button appear. Let me know any tweaks in the terminal.</p>
