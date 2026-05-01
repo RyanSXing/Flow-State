@@ -8,8 +8,17 @@ const { log } = require('./logger')
 const INTERVAL_MS = 30000
 const IDLE_THRESHOLD_S = 20
 
-function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdleTime, getPomodoroActive = () => true }) {
+function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdleTime, getPomodoroActive = () => true, onVoiceStart = () => {}, onVoiceEnd = () => {} }) {
   let timer = null
+
+  async function speakWithVoiceCallbacks(payload, voiceId, apiKey) {
+    onVoiceStart(payload)
+    try {
+      await speak(payload.dialogue, voiceId, apiKey)
+    } finally {
+      onVoiceEnd(payload)
+    }
+  }
 
   async function tick() {
     const settings = getSettings()
@@ -37,7 +46,7 @@ function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdle
         const dialogue = await generateDialogue(verdict, memoryLog, character, settings.taskDescription, anthropic)
         log('DIALOGUE', `"${dialogue}"`)
         log('TTS', 'Speaking...')
-        await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+        await speakWithVoiceCallbacks({ verdict, dialogue, character, isIdle: true }, character.elevenLabsVoiceId, elevenlabs)
         log('TTS', 'Playback complete')
         onReaction({ verdict, dialogue, character, isIdle: true })
       } else {
@@ -52,7 +61,7 @@ function createLoop({ getApiKeys, getSettings, getCharacter, onReaction, getIdle
         const dialogue = await generateDialogue(verdict, memoryLog, character, settings.taskDescription, anthropic)
         log('DIALOGUE', `"${dialogue}"`)
         log('TTS', 'Speaking...')
-        await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+        await speakWithVoiceCallbacks({ verdict, dialogue, character }, character.elevenLabsVoiceId, elevenlabs)
         log('TTS', 'Playback complete')
         onReaction({ verdict, dialogue, character })
       }

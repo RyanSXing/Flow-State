@@ -30,7 +30,7 @@ function checkScreenPermission() {
 function createOverlayWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const OVERLAY_W = 180
-  const OVERLAY_H = 190
+  const OVERLAY_H = 205
   const savedPos = store.getOverlayPosition()
   const x = savedPos.x !== null ? savedPos.x : width - OVERLAY_W - 20
   const y = savedPos.y !== null ? savedPos.y : height - OVERLAY_H - 20
@@ -61,8 +61,10 @@ function createOverlayWindow() {
     overlayWin.webContents.send('character:set', {
       avatarImage: character.avatarImage,
       avatarColor: character.avatarColor,
+      avatarSprite: character.avatarSprite,
       avatarInitial: character.avatarInitial
     })
+    pushPomodoroSettingsUpdate()
   })
 }
 
@@ -72,8 +74,8 @@ function createSettingsWindow() {
   if (settingsWin) { settingsWin.focus(); return }
 
   settingsWin = new BrowserWindow({
-    width: 380,
-    height: 640,
+    width: 430,
+    height: 760,
     title: 'Flow State',
     resizable: false,
     webPreferences: {
@@ -131,6 +133,7 @@ function updateTrayMenu() {
           loop.start()
         }
         updateTrayMenu()
+        pushSessionStateUpdate()
       }
     },
     { type: 'separator' },
@@ -147,6 +150,25 @@ function pushLogUpdate() {
   settingsWin.webContents.send('session:log-update', memory.getRecent(50))
 }
 
+function pushSessionStateUpdate() {
+  if (!settingsWin) return
+  const settings = store.getSettings()
+  settingsWin.webContents.send('session:state-update', {
+    taskDescription: settings.taskDescription,
+    paused: settings.paused
+  })
+}
+
+function pushPomodoroSettingsUpdate() {
+  if (!overlayWin) return
+  overlayWin.webContents.send('pomodoro:settings-update', store.getSettings().pomodoro)
+}
+
+function pushAvatarTalking(talking) {
+  if (!overlayWin) return
+  overlayWin.webContents.send('avatar:talking', { talking })
+}
+
 function registerIPC() {
   ipcMain.handle('settings:load', () => {
     const settings = store.getSettings()
@@ -154,9 +176,9 @@ function registerIPC() {
     return { ...settings, anthropicKey: keys.anthropic, elevenlabsKey: keys.elevenlabs }
   })
 
-  ipcMain.handle('settings:save', (_, { character, interval, anthropicKey, elevenlabsKey }) => {
+  ipcMain.handle('settings:save', (_, { character, pomodoro, anthropicKey, elevenlabsKey }) => {
     store.setSetting('character', character)
-    store.setSetting('interval', interval)
+    store.setSetting('pomodoro', pomodoro)
     store.setApiKey('anthropic', anthropicKey || '')
     store.setApiKey('elevenlabs', elevenlabsKey || '')
 
@@ -165,6 +187,7 @@ function registerIPC() {
       overlayWin.webContents.send('character:set', {
         avatarImage: char.avatarImage,
         avatarColor: char.avatarColor,
+        avatarSprite: char.avatarSprite,
         avatarInitial: char.avatarInitial
       })
     }
@@ -173,6 +196,7 @@ function registerIPC() {
     if (!currentSettings.paused && currentSettings.taskDescription) {
       loop.start()
     }
+    pushPomodoroSettingsUpdate()
   })
 
   ipcMain.handle('session:start', (_, taskDescription) => {
@@ -182,6 +206,7 @@ function registerIPC() {
     log('SESSION', `Session started — task: "${taskDescription}"`)
     loop.start()
     updateTrayMenu()
+    pushSessionStateUpdate()
     pushLogUpdate()
   })
 
@@ -192,6 +217,7 @@ function registerIPC() {
     loop.stop()
     if (overlayWin) overlayWin.webContents.send('pomodoro:set-running', { running: false })
     updateTrayMenu()
+    pushSessionStateUpdate()
   })
 
   ipcMain.handle('session:resume', () => {
@@ -201,6 +227,7 @@ function registerIPC() {
     loop.start()
     if (overlayWin) overlayWin.webContents.send('pomodoro:set-running', { running: true })
     updateTrayMenu()
+    pushSessionStateUpdate()
   })
 
   ipcMain.handle('characters:get', () => getAllCharacters())
@@ -225,9 +252,12 @@ function registerIPC() {
     const character = getCharacter(settings.character)
     try {
       const dialogue = await generateTransitionDialogue(from, to, pomodoroCount, character, settings.taskDescription, anthropic)
+      pushAvatarTalking(true)
       await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+      pushAvatarTalking(false)
       if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
     } catch (err) {
+      pushAvatarTalking(false)
       log('ERROR', 'Pomodoro transition error: ' + err.message)
       if (overlayWin) overlayWin.webContents.send('reaction:fire', {})
     }
@@ -241,11 +271,22 @@ function registerIPC() {
       const from = paused ? 'running' : 'paused'
       const to = paused ? 'paused' : 'running'
       const dialogue = await generateTransitionDialogue(from, to, 0, character, settings.taskDescription, anthropic)
+      pushAvatarTalking(true)
       await speak(dialogue, character.elevenLabsVoiceId, elevenlabs)
+      pushAvatarTalking(false)
       if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
     } catch (err) {
+      pushAvatarTalking(false)
       log('ERROR', 'Pomodoro pause error: ' + err.message)
     }
+  })
+
+  ipcMain.handle('pomodoro:reset', () => {
+    pomodoroActive = false
+    store.setSetting('paused', true)
+    if (overlayWin) overlayWin.webContents.send('pomodoro:reset')
+    updateTrayMenu()
+    pushSessionStateUpdate()
   })
 
   ipcMain.on('pomodoro:running', (_, { active }) => {
@@ -260,6 +301,7 @@ function registerIPC() {
       log('SESSION', 'Session paused via pomodoro timer')
     }
     updateTrayMenu()
+    pushSessionStateUpdate()
   })
 
   ipcMain.on('settings:open', () => {
@@ -292,7 +334,9 @@ function setupLoop() {
     onReaction: ({ dialogue }) => {
       if (overlayWin) overlayWin.webContents.send('reaction:fire', { dialogue })
       pushLogUpdate()
-    }
+    },
+    onVoiceStart: () => pushAvatarTalking(true),
+    onVoiceEnd: () => pushAvatarTalking(false)
   })
 
   const settings = store.getSettings()

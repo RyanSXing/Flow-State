@@ -2,6 +2,20 @@ const Store = require('electron-store')
 
 const store = new Store()
 
+const DEFAULT_POMODORO = {
+  workMinutes: 25,
+  shortBreakMinutes: 5,
+  longBreakMinutes: 15,
+  sessionsUntilLongBreak: 4
+}
+
+function getPomodoroSettings() {
+  return {
+    ...DEFAULT_POMODORO,
+    ...store.get('pomodoro', {})
+  }
+}
+
 function getApiKeys() {
   return {
     anthropic: store.get('anthropicKey', ''),
@@ -17,6 +31,7 @@ function getSettings() {
   return {
     character: store.get('character', 'drill-sergeant'),
     interval: store.get('interval', 20),
+    pomodoro: getPomodoroSettings(),
     paused: store.get('paused', false),
     taskDescription: store.get('taskDescription', '')
   }

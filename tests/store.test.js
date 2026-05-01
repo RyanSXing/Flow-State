@@ -28,6 +28,12 @@ describe('store', () => {
     expect(getSettings()).toEqual({
       character: 'drill-sergeant',
       interval: 20,
+      pomodoro: {
+        workMinutes: 25,
+        shortBreakMinutes: 5,
+        longBreakMinutes: 15,
+        sessionsUntilLongBreak: 4
+      },
       paused: false,
       taskDescription: ''
     })

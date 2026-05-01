@@ -1,3 +1,10 @@
+const DEFAULT_POMODORO = {
+  workMinutes: 25,
+  shortBreakMinutes: 5,
+  longBreakMinutes: 15,
+  sessionsUntilLongBreak: 4
+}
+
 async function init() {
   const [settings, characters] = await Promise.all([
     window.settingsAPI.loadSettings(),
@@ -14,51 +21,89 @@ async function init() {
   })
 
   document.getElementById('task').value = settings.taskDescription || ''
-  document.getElementById('interval').value = settings.interval
-  document.getElementById('interval-label').textContent = `Check every ${settings.interval} seconds`
   document.getElementById('anthropic-key').value = settings.anthropicKey || ''
   document.getElementById('elevenlabs-key').value = settings.elevenlabsKey || ''
+  writePomodoroSettings(settings.pomodoro || DEFAULT_POMODORO)
 
-  if (settings.taskDescription && settings.paused) showPaused()
-  else if (settings.taskDescription) showActive()
+  showSessionState(settings)
+}
+
+function setVisible(id, visible) {
+  document.getElementById(id).style.display = visible ? 'block' : 'none'
 }
 
 function showActive() {
-  document.getElementById('btn-start').style.display = 'none'
-  document.getElementById('btn-update').style.display = 'inline-block'
-  document.getElementById('btn-pause').style.display = 'inline-block'
-  document.getElementById('btn-resume').style.display = 'none'
+  setVisible('btn-start', false)
+  setVisible('btn-update', true)
+  setVisible('btn-pause', true)
+  setVisible('btn-resume', false)
+  document.getElementById('session-state').className = 'status-pill'
+  document.getElementById('session-state').textContent = 'Active'
   document.getElementById('status').textContent = 'Session active'
 }
 
 function showPaused() {
-  document.getElementById('btn-start').style.display = 'none'
-  document.getElementById('btn-update').style.display = 'inline-block'
-  document.getElementById('btn-pause').style.display = 'none'
-  document.getElementById('btn-resume').style.display = 'inline-block'
+  setVisible('btn-start', false)
+  setVisible('btn-update', true)
+  setVisible('btn-pause', false)
+  setVisible('btn-resume', true)
+  document.getElementById('session-state').className = 'status-pill paused'
+  document.getElementById('session-state').textContent = 'Paused'
   document.getElementById('status').textContent = 'Session paused'
 }
 
 function showIdle() {
-  document.getElementById('btn-start').style.display = 'inline-block'
-  document.getElementById('btn-update').style.display = 'none'
-  document.getElementById('btn-pause').style.display = 'none'
-  document.getElementById('btn-resume').style.display = 'none'
+  setVisible('btn-start', true)
+  setVisible('btn-update', false)
+  setVisible('btn-pause', false)
+  setVisible('btn-resume', false)
+  document.getElementById('session-state').className = 'status-pill idle'
+  document.getElementById('session-state').textContent = 'Idle'
   document.getElementById('status').textContent = ''
+}
+
+function showSessionState(state) {
+  if (state.taskDescription && state.paused) showPaused()
+  else if (state.taskDescription) showActive()
+  else showIdle()
+}
+
+function clampInt(value, min, max, fallback) {
+  const parsed = parseInt(value, 10)
+  if (Number.isNaN(parsed)) return fallback
+  return Math.min(max, Math.max(min, parsed))
+}
+
+function readPomodoroSettings() {
+  return {
+    workMinutes: clampInt(document.getElementById('pomodoro-work').value, 1, 90, DEFAULT_POMODORO.workMinutes),
+    shortBreakMinutes: clampInt(document.getElementById('pomodoro-short-break').value, 1, 45, DEFAULT_POMODORO.shortBreakMinutes),
+    longBreakMinutes: clampInt(document.getElementById('pomodoro-long-break').value, 1, 90, DEFAULT_POMODORO.longBreakMinutes),
+    sessionsUntilLongBreak: clampInt(document.getElementById('pomodoro-rounds').value, 1, 12, DEFAULT_POMODORO.sessionsUntilLongBreak)
+  }
+}
+
+function writePomodoroSettings(settings) {
+  document.getElementById('pomodoro-work').value = settings.workMinutes
+  document.getElementById('pomodoro-short-break').value = settings.shortBreakMinutes
+  document.getElementById('pomodoro-long-break').value = settings.longBreakMinutes
+  document.getElementById('pomodoro-rounds').value = settings.sessionsUntilLongBreak
 }
 
 async function saveCurrentSettings() {
   await window.settingsAPI.saveSettings({
     character: document.getElementById('character').value,
-    interval: parseInt(document.getElementById('interval').value),
+    pomodoro: readPomodoroSettings(),
     anthropicKey: document.getElementById('anthropic-key').value,
     elevenlabsKey: document.getElementById('elevenlabs-key').value
   })
 }
 
-document.getElementById('interval').addEventListener('input', (e) => {
-  document.getElementById('interval-label').textContent = `Check every ${e.target.value} seconds`
-})
+async function savePomodoroSettings(message) {
+  writePomodoroSettings(readPomodoroSettings())
+  await saveCurrentSettings()
+  document.getElementById('status').textContent = message
+}
 
 document.getElementById('btn-start').addEventListener('click', async () => {
   const task = document.getElementById('task').value.trim()
@@ -90,24 +135,27 @@ document.getElementById('btn-resume').addEventListener('click', async () => {
   showActive()
 })
 
+document.getElementById('btn-save-pomodoro').addEventListener('click', async () => {
+  await savePomodoroSettings('Timer settings applied')
+})
+
+document.getElementById('btn-reset-pomodoro').addEventListener('click', async () => {
+  writePomodoroSettings(DEFAULT_POMODORO)
+  await savePomodoroSettings('Classic timer restored')
+})
+
+document.getElementById('btn-reset-timer').addEventListener('click', async () => {
+  await window.settingsAPI.resetPomodoroTimer()
+  document.getElementById('status').textContent = 'Timer reset'
+  showPaused()
+})
+
 document.getElementById('character').addEventListener('change', saveCurrentSettings)
 document.getElementById('anthropic-key').addEventListener('change', saveCurrentSettings)
 document.getElementById('elevenlabs-key').addEventListener('change', saveCurrentSettings)
 
-window.settingsAPI.onLogUpdate((events) => {
-  const log = document.getElementById('session-log')
-  if (!events || !events.length) {
-    log.innerHTML = '<div style="color:#333">No events yet.</div>'
-    return
-  }
-  log.innerHTML = events.map(e => `
-    <div class="log-entry">
-      <span class="log-time">[${e.time}]</span>
-      <span class="${e.onTask ? 'log-on' : 'log-off'}">${e.onTask ? '✓' : '✗'}</span>
-      ${e.activity}
-    </div>
-  `).join('')
-  log.scrollTop = log.scrollHeight
+window.settingsAPI.onSessionStateUpdate((state) => {
+  showSessionState(state)
 })
 
 init()

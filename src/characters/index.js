@@ -25,6 +25,89 @@ const characters = [
     avatarColor: '#4B0082',
     avatarImage: 'assets/character.png',
     avatarInitial: 'AR'
+  },
+  {
+    id: 'bibilabu',
+    name: 'Bibilabu',
+    personalityPrompt: `You are Bibilabu, a cheerful tiny warrior dog with a sword and shield. You are upbeat, brave, and playfully intense about focus. When the user is off-task, you rally them like a loyal quest companion. When they're on-task, you celebrate quickly and urge them onward. Keep reactions short, cute, and spirited.`,
+    elevenLabsVoiceId: 'EXAVITQu4vr4xnSDxMaL',
+    avatarColor: '#D99A3D',
+    avatarImage: 'assets/bibilabu-sprite-sheet.png',
+    avatarInitial: 'BB',
+    avatarSprite: {
+      defaultState: 'idle',
+      sheetWidth: 2040,
+      sheetHeight: 2835,
+      states: {
+        swing: {
+          image: 'assets/bibilabu-sprite-sheet.png',
+          frameWidth: 510,
+          frameHeight: 381,
+          frameCount: 4,
+          columns: 4,
+          fps: 10,
+          loop: false,
+          offsetX: 0,
+          offsetY: 18,
+          frames: [
+            { x: 0, y: 12, width: 510, height: 381 },
+            { x: 510, y: 12, width: 510, height: 381 },
+            { x: 1020, y: 12, width: 510, height: 381 },
+            { x: 1530, y: 12, width: 510, height: 381 }
+          ]
+        },
+        talking: {
+          image: 'assets/bibilabu-sprite-sheet.png',
+          frameWidth: 405,
+          frameHeight: 405,
+          frameCount: 12,
+          columns: 4,
+          fps: 10,
+          loop: true,
+          offsetX: 0,
+          offsetY: 8,
+          frames: [
+            { x: 52, y: 405, width: 405, height: 405 },
+            { x: 1072, y: 2025, width: 405, height: 405 },
+            { x: 1072, y: 405, width: 405, height: 405 },
+            { x: 1580, y: 405, width: 409, height: 404 },
+            { x: 52, y: 810, width: 405, height: 405 },
+            { x: 562, y: 810, width: 405, height: 405 },
+            { x: 1072, y: 810, width: 405, height: 405 },
+            { x: 1582, y: 810, width: 405, height: 405 },
+            { x: 1072, y: 1620, width: 405, height: 405 },
+            { x: 562, y: 1215, width: 405, height: 405 },
+            { x: 1070, y: 1215, width: 409, height: 404 },
+            { x: 1582, y: 1215, width: 405, height: 405 }
+          ]
+        },
+        idle: {
+          image: 'assets/bibilabu-sprite-sheet.png',
+          frameWidth: 409,
+          frameHeight: 404,
+          frameCount: 12,
+          columns: 4,
+          fps: 6,
+          loop: true,
+          offsetX: 0,
+          offsetY: 8,
+          frames: [
+            { x: 50, y: 1620, width: 409, height: 404 },
+            { x: 560, y: 1620, width: 409, height: 404 },
+            { x: 50, y: 1215, width: 409, height: 404 },
+            { x: 1580, y: 1620, width: 409, height: 404 },
+            { x: 50, y: 2025, width: 409, height: 404 },
+            { x: 562, y: 2025, width: 405, height: 405 },
+            { x: 560, y: 405, width: 409, height: 404 },
+            { x: 1580, y: 2025, width: 409, height: 404 },
+            { x: 50, y: 2430, width: 409, height: 404 },
+            { x: 560, y: 2430, width: 409, height: 404 },
+            { x: 1072, y: 2430, width: 405, height: 405 },
+            { x: 1580, y: 2430, width: 409, height: 404 }
+          ]
+        }
+      }
+    }
   }
 ]
 

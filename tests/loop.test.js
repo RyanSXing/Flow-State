@@ -34,6 +34,8 @@ describe('loop tick', () => {
       getSettings: () => ({ taskDescription: 'study for exam', character: 'drill-sergeant', interval: 20, paused: false }),
       getCharacter: (id) => ({ id, name: 'Drill Sergeant', personalityPrompt: '...', elevenLabsVoiceId: 'v1' }),
       onReaction: jest.fn(),
+      onVoiceStart: jest.fn(),
+      onVoiceEnd: jest.fn(),
       getIdleTime: jest.fn().mockReturnValue(0)
     }
     loop = createLoop(config)
@@ -57,6 +59,19 @@ describe('loop tick', () => {
   test('tick calls onReaction callback', async () => {
     await loop.tick()
     expect(config.onReaction).toHaveBeenCalledWith(expect.objectContaining({ dialogue: 'Get back to work\!' }))
+  })
+
+  test('tick brackets speech with voice animation callbacks before reaction', async () => {
+    const order = []
+    config.onVoiceStart = jest.fn(() => order.push('voice-start'))
+    config.onVoiceEnd = jest.fn(() => order.push('voice-end'))
+    config.onReaction = jest.fn(() => order.push('reaction'))
+    tts.speak.mockImplementation(async () => { order.push('speak') })
+    loop = createLoop(config)
+
+    await loop.tick()
+
+    expect(order).toEqual(['voice-start', 'speak', 'voice-end', 'reaction'])
   })
 
   test('tick skips to idle path when user is idle', async () => {

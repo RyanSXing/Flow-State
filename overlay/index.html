@@ -11,20 +11,33 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px 10px 10px;
-      gap: 8px;
+      padding: 8px 10px 8px;
+      gap: 6px;
     }
 
     #character {
-      width: 80px;
-      height: 80px;
+      width: 92px;
+      height: 92px;
       border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      overflow: hidden;
+      background-color: #fff;
+      background-image: url("../assets/character.png");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      border: 1px solid rgba(36,49,47,0.72);
+      box-shadow: none;
       -webkit-app-region: no-drag;
       display: block;
       cursor: default;
       flex-shrink: 0;
+    }
+
+    #character.sprite-avatar {
+      border-radius: 50%;
+      background-size: auto;
+      background-position: 0 center;
+      image-rendering: auto;
     }
 
     #character.bouncing {
@@ -50,17 +63,19 @@
 
     #timer-label {
       font-family: monospace;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      color: #ff7a5c;
+      color: #17201f;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.9);
     }
 
     #timer-track {
       width: 160px;
-      height: 8px;
-      background: rgba(255,255,255,0.08);
+      height: 9px;
+      background: rgba(255,255,255,0.9);
+      border: 2px solid rgba(36,49,47,0.82);
       border-radius: 99px;
       overflow: hidden;
     }
@@ -96,23 +111,26 @@
     }
 
     #timer-controls button {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.75);
+      background: #fff;
+      border: 2px solid rgba(36,49,47,0.78);
+      color: #24312f;
       font-size: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      box-shadow: none;
+      transition: background 0.15s, transform 0.15s, border-color 0.15s;
       -webkit-app-region: no-drag;
     }
 
     #timer-controls button:hover {
-      background: rgba(255,255,255,0.18);
+      background: #fff;
+      border-color: rgba(13,148,136,0.95);
+      transform: translateY(-1px);
     }
 
     @keyframes pulse {
@@ -127,7 +145,7 @@
   </style>
 </head>
 <body>
-  <img id="character" src="../assets/character.png" width="80" height="80" draggable="false" />
+  <div id="character" draggable="false"></div>
 
   <div id="timer-bar">
     <div id="timer-label">WORK &middot; 25:00</div>

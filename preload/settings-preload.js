@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('settingsAPI', {
   startSession: (taskDescription) => ipcRenderer.invoke('session:start', taskDescription),
   pauseSession: () => ipcRenderer.invoke('session:pause'),
   resumeSession: () => ipcRenderer.invoke('session:resume'),
-  onLogUpdate: (cb) => ipcRenderer.on('session:log-update', (_, events) => cb(events)),
+  resetPomodoroTimer: () => ipcRenderer.invoke('pomodoro:reset'),
+  onSessionStateUpdate: (cb) => ipcRenderer.on('session:state-update', (_, state) => cb(state)),
   getCharacters: () => ipcRenderer.invoke('characters:get')
 })
